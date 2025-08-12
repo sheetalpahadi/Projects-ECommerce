@@ -103,6 +103,7 @@
 		84E1B5B12E4B9B4D00043C4D /* Projects-ECommerce */ = {
 			isa = PBXGroup;
 			children = (
+				84E1B5DC2E4B9CC200043C4D /* README.md */,
 				84E1B5EE2E4BBC9D00043C4D /* Models */,
 				84E1B5E12E4B9F4500043C4D /* UIComponents */,
 				84E1B5B22E4B9B4D00043C4D /* Projects_ECommerceApp.swift */,
@@ -110,7 +111,6 @@
 				84E1B5DD2E4B9E8D00043C4D /* HomePageView.swift */,
 				84E1B5B62E4B9B5000043C4D /* Assets.xcassets */,
 				84E1B5B82E4B9B5000043C4D /* Preview Content */,
-				84E1B5DC2E4B9CC200043C4D /* README.md */,
 				84E1B5DF2E4B9EC700043C4D /* HomePageViewModel.swift */,
 			);
 			path = "Projects-ECommerce";
