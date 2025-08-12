@@ -114,47 +114,89 @@ import Foundation
 //-----------------------------------------------
 
 //VERSION 4 - If I want ProductModel to be observable for internal changes in properties
-class ProductModel : Decodable, ObservableObject {
-    @Published var id: Int
-    @Published var title: String
-    @Published var price: CGFloat
-    @Published var description: String
-    @Published var category: String
-    @Published var image: String
-    
-    
-    //why is the term 'required' necessary here?
-    //we need to add this init from decoder manually because, a class can't automatically synthesize initialisers if it has 'property wrappers'
-    //if a class does not have property wrappers at all, it can automatically synthesize the decoder init
-    //in order to write manula decoder init, you also need to define your coding keys in this case
-    required init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int.self, forKey: .id)
-        title = try container.decode(String.self, forKey: .title)
-        price = try container.decode(CGFloat.self, forKey: .price)
-        description = try container.decode(String.self, forKey: .description)
-        category = try container.decode(String.self, forKey: .category)
-        image = try container.decode(String.self, forKey: .image)
-        //should I also set default values above?
-        //not here - because here we are considering that all keys will definitely be present
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case price
-        case description
-        case category
-        case image
-    }
-
-}
+//class ProductModel : Decodable, ObservableObject {
+//    @Published var id: Int
+//    @Published var title: String
+//    @Published var price: CGFloat
+//    @Published var description: String
+//    @Published var category: String
+//    @Published var image: String
+//    
+//    
+//    //why is the term 'required' necessary here?
+//    //we need to add this init from decoder manually because, a class can't automatically synthesize initialisers if it has 'property wrappers'
+//    //if a class does not have property wrappers at all, it can automatically synthesize the decoder init
+//    //in order to write manula decoder init, you also need to define your coding keys in this case
+//    required init(from decoder: any Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        id = try container.decode(Int.self, forKey: .id)
+//        title = try container.decode(String.self, forKey: .title)
+//        price = try container.decode(CGFloat.self, forKey: .price)
+//        description = try container.decode(String.self, forKey: .description)
+//        category = try container.decode(String.self, forKey: .category)
+//        image = try container.decode(String.self, forKey: .image)
+//        //should I also set default values above?
+//        //not here - because here we are considering that all keys will definitely be present
+//    }
+//    
+//    enum CodingKeys: String, CodingKey {
+//        case id
+//        case title
+//        case price
+//        case description
+//        case category
+//        case image
+//    }
+//
+//}
 
 
 //-----------------------------------------------
 
 //VERSION 5 - I want ProductModel to be observable and also have the possibility of receiving API responses, with certain keys missing
 
-//TO DO -----------------------------------------
+class ProductModel: ObservableObject, Decodable {
+    @Published var id: Int?
+    @Published var title: String?
+    @Published var price: CGFloat?
+    @Published var description: String?
+    @Published var category: String?
+    @Published var image: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, price, description, category, image
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        price = try container.decodeIfPresent(CGFloat.self, forKey: .price)
+        description = try container.decodeIfPresent(String.self, forKey: .description)
+        category = try container.decodeIfPresent(String.self, forKey: .category)
+        image = try container.decodeIfPresent(String.self, forKey: .image)
+    }
+}
+
+//Trade-offs of optionals here
+
+//Pros:
+//You know exactly which values the API didn’t send (they’ll be nil).
+//No need for arbitrary defaults like "" or 0.0.
+
+//Cons:
+//Your SwiftUI views will need to handle optionals (product.title ?? "Unknown").
+//More if let unwrapping in the UI code.
+
+//If your API can omit keys and you want to preserve that information in your model, optionals are the correct approach.
+//If your UI prefers never dealing with optionals, use non-optionals with safe defaults.
+
+
+//-----------------------------------------------
+
+//VERSION 6 - HYBRID APPROACH
+//The model stores nils internally but exposes non-optional computed properties for the UI so you get the best of both worlds.
+//Required properties (that should ideally always come in response) should be non-optional
+//Optional properties
 
 

@@ -45,7 +45,7 @@ struct ProductView: View {
             Image(systemName: "xmark")
                 .resizable()
                 .frame(width: 50, height: 50)
-            Text(product.title)
+            Text(product.title ?? "Product")
         }
         .padding(.all, 8)
         .background(Color.red)
