@@ -83,6 +83,7 @@
 		84E1B5A62E4B9B4D00043C4D = {
 			isa = PBXGroup;
 			children = (
+				84E1B5DC2E4B9CC200043C4D /* README.md */,
 				84E1B5B12E4B9B4D00043C4D /* Projects-ECommerce */,
 				84E1B5C22E4B9B5100043C4D /* Projects-ECommerceTests */,
 				84E1B5CC2E4B9B5100043C4D /* Projects-ECommerceUITests */,
@@ -103,7 +104,6 @@
 		84E1B5B12E4B9B4D00043C4D /* Projects-ECommerce */ = {
 			isa = PBXGroup;
 			children = (
-				84E1B5DC2E4B9CC200043C4D /* README.md */,
 				84E1B5EE2E4BBC9D00043C4D /* Models */,
 				84E1B5E12E4B9F4500043C4D /* UIComponents */,
 				84E1B5B22E4B9B4D00043C4D /* Projects_ECommerceApp.swift */,
