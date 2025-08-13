@@ -21,28 +21,56 @@ struct HomePageView: View {
     }
     
     var headerView: some View {
-        HStack(spacing: 12) {
-            TextField(text: $viewModel.searchText) {
-                Text("Type to search products")
+        
+        HStack(alignment: .center, spacing: 12) {
+            Image("logoWithName")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 30, height: 30)
+            HStack(alignment: .center, spacing: 8) {
+                TextField(text: $viewModel.searchText) {
+                    Text("Type to search products")
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 4)
+                Image(systemName: "magnifyingglass")
+                    .resizable()
+                    .frame(width: 20, height: 20)
             }
+            .padding(.horizontal, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.black, lineWidth: 0.5)
+            )
         }
+      
         .padding(.all, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     var productsView: some View {
         ScrollView {
-            VStack(spacing: 8) {
-//                ForEach(0 ..< 15, id: \.self) { _ in
-//                    ProductView()
+//            VStack(spacing: 8) {
+//                ForEach(viewModel.products, id: \.id) { product in
+//                    ProductView(product: product)
+//                        .frame(maxWidth: 300)
 //                }
+//            }
+//            .frame(maxWidth: .infinity, alignment: .center)
+            let gridItems = [
+                GridItem(.flexible(), spacing: 12),
+                GridItem(.flexible()),
+            ]
+            
+            LazyVGrid(columns: gridItems, spacing: 24) {
                 ForEach(viewModel.products, id: \.id) { product in
                     ProductView(product: product)
+                        .frame(height: 250)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .center)
         }
         .scrollIndicators(.hidden)
+        .padding()
         .frame(maxWidth: .infinity)
     }
     

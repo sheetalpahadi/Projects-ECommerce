@@ -42,13 +42,33 @@ struct ProductView: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: "xmark")
-                .resizable()
-                .frame(width: 50, height: 50)
-            Text(product.title ?? "Product")
+//            Image(systemName: "xmark")
+//                .resizable()
+//                .frame(width: 50, height: 50)
+            
+            //Async image loads image again and again on scrolling up and down
+            //how to fix it?
+            AsyncImage(url: URL(string: product.image ?? "")) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(.all, 8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            Text(product.title)
+                .lineLimit(2)
+                .font(.system(size: 14))
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.all, 8)
-        .background(Color.red)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .cornerRadius(8.0)
+        .background(
+            RoundedRectangle(cornerRadius: 8.0)
+                .stroke(Color(red: 0.3, green: 0.3, blue: 0.3), lineWidth: 0.3)
+        )
     }
 }
 

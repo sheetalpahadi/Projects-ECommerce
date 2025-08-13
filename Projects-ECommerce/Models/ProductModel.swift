@@ -155,28 +155,28 @@ import Foundation
 
 //VERSION 5 - I want ProductModel to be observable and also have the possibility of receiving API responses, with certain keys missing
 
-class ProductModel: ObservableObject, Decodable {
-    @Published var id: Int?
-    @Published var title: String?
-    @Published var price: CGFloat?
-    @Published var description: String?
-    @Published var category: String?
-    @Published var image: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id, title, price, description, category, image
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decodeIfPresent(Int.self, forKey: .id)
-        title = try container.decodeIfPresent(String.self, forKey: .title)
-        price = try container.decodeIfPresent(CGFloat.self, forKey: .price)
-        description = try container.decodeIfPresent(String.self, forKey: .description)
-        category = try container.decodeIfPresent(String.self, forKey: .category)
-        image = try container.decodeIfPresent(String.self, forKey: .image)
-    }
-}
+//class ProductModel: ObservableObject, Decodable {
+//    @Published var id: Int?
+//    @Published var title: String?
+//    @Published var price: CGFloat?
+//    @Published var description: String?
+//    @Published var category: String?
+//    @Published var image: String?
+//
+//    enum CodingKeys: String, CodingKey {
+//        case id, title, price, description, category, image
+//    }
+//
+//    required init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        id = try container.decodeIfPresent(Int.self, forKey: .id)
+//        title = try container.decodeIfPresent(String.self, forKey: .title)
+//        price = try container.decodeIfPresent(CGFloat.self, forKey: .price)
+//        description = try container.decodeIfPresent(String.self, forKey: .description)
+//        category = try container.decodeIfPresent(String.self, forKey: .category)
+//        image = try container.decodeIfPresent(String.self, forKey: .image)
+//    }
+//}
 
 //Trade-offs of optionals here
 
@@ -198,5 +198,44 @@ class ProductModel: ObservableObject, Decodable {
 //The model stores nils internally but exposes non-optional computed properties for the UI so you get the best of both worlds.
 //Required properties (that should ideally always come in response) should be non-optional
 //Optional properties
+
+class ProductModel: ObservableObject, Decodable {
+    
+    @Published var id: Int //required
+    @Published var title: String //required
+    @Published var price: CGFloat //required
+    @Published var description: String? //optional
+    @Published var category: String
+    @Published var image: String? //optional
+    // every product should show a category in FE, the BE however may not send category for uncategorised products
+    //since I want it to always have a value, irrespective of key coming from BE, I am marking 'category' as non optional
+    //But this might not sound good to some, as it does not reflect the actual structure of API contract being used by BE
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, price, description, category, image
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        price = try container.decode(CGFloat.self, forKey: .price)
+        //above three lines throw error only if there is some type mismatch or corrupted data in the key
+        //if the keys are absent, it will throw error as we are using 'decode' and not 'decodeIfPresent'
+        
+        description = try container.decodeIfPresent(String.self, forKey: .description)
+        //this will store nil in description if key is missing
+        //if data is mismatched/corrupted, it will through error
+        
+        category = try container.decodeIfPresent(String.self, forKey: .category) ?? "uncategorised"
+        //I always want to have a value, irrespective of whether BE sends a category or not.
+        
+        image = try container.decodeIfPresent(String.self, forKey: .image)
+        //will store nil if key not received
+        //through error if type mismatch/corrupt data
+    }
+}
+
+//Concerns - should values with published property wrappers be defined in this way?
 
 
