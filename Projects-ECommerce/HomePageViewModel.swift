@@ -13,9 +13,13 @@ class HomePageViewModel: ObservableObject {
     @Published var products: [ProductModel] = []
     
     init() {
-        self.fetchproducts()
+//        self.fetchproducts()
+//        fetchproductsFromLocalFileSync()
+        fetchproductsFromLocalFileAsync()
     }
     
+    
+//    Approach 2 - Separating to a network layer
     func fetchproducts() {
         NetworkManager.fetchproducts { products, error in
             if let products = products {
@@ -33,6 +37,8 @@ class HomePageViewModel: ObservableObject {
             }
         }
     }
+    
+//    Approach 1 -  not separating a network layer
 //    func fetchproducts() {
 //        let urlString =  "https://fakestoreapi.com/products"
 //        if let url = URL(string: urlString) {
@@ -70,6 +76,48 @@ class HomePageViewModel: ObservableObject {
 //            task.resume()
 //        }
 //    }
+    
+    
+//    Loading JSON from a local file - using synchronous fetching
+    func fetchproductsFromLocalFileSync() {
+        if let url = Bundle.main.url(forResource: "DummyProducts", withExtension: "json") {
+            do {
+                let fetchedData = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let decodedData = try decoder.decode([ProductModel].self, from: fetchedData)
+                print("data fetched synchronously from local json")
+                self.products = decodedData
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+//    Loading JSON from a local file - using asynchronous fetching
+    func fetchproductsFromLocalFileAsync() {
+        if let url = Bundle.main.url(forResource: "DummyProducts", withExtension: "json") {
+            let request = URLRequest(url: url)
+            let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    do {
+                        let decodedData = try decoder.decode([ProductModel].self, from: data)
+                        DispatchQueue.main.async { [weak self] in
+                            print("data fetched asynchronously from local json")
+                            self?.products = decodedData
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+                
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+            dataTask.resume()
+        }
+    }
 }
 
 // Q.1 - How to capture self weakly inside URLSession.shared.dataTask - DONE
