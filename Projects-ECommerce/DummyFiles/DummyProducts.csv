@@ -1,0 +1,6 @@
+ProductID,ProductName,Category,Price,StockQuantity,Description
+P001,Laptop Pro,Electronics,1200.00,50,High-performance laptop with 16GB RAM.
+P002,Wireless Mouse,Electronics,25.99,200,Ergonomic wireless mouse with adjustable DPI.
+P003,Cotton T-shirt,Apparel,15.50,300,Soft 100% cotton t-shirt in various colors.
+P004,Running Shoes,Footwear,75.00,100,Lightweight running shoes for optimal performance.
+P005,Coffee Maker,Home Appliances,49.99,75,Automatic coffee maker with programmable timer.

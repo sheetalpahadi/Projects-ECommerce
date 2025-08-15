@@ -214,6 +214,7 @@ class ProductModel: ObservableObject, Decodable {
     enum CodingKeys: String, CodingKey {
         case id, title, price, description, category, image
     }
+    
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

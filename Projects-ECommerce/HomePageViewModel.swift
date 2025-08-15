@@ -15,7 +15,8 @@ class HomePageViewModel: ObservableObject {
     init() {
 //        self.fetchproducts()
 //        fetchproductsFromLocalFileSync()
-        fetchproductsFromLocalFileAsync()
+//        fetchproductsFromLocalFileAsync()
+        fetchProductsFromCSV()
     }
     
     
@@ -82,6 +83,9 @@ class HomePageViewModel: ObservableObject {
     func fetchproductsFromLocalFileSync() {
         if let url = Bundle.main.url(forResource: "DummyProducts", withExtension: "json") {
             do {
+                //note that JSONDecoder takes data as input
+                //if you have a string, first convert it into data, then parse
+                //also, find a away if JSONDecoder can directly decode from string
                 let fetchedData = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 let decodedData = try decoder.decode([ProductModel].self, from: fetchedData)
@@ -116,6 +120,95 @@ class HomePageViewModel: ObservableObject {
                 }
             }
             dataTask.resume()
+        }
+    }
+    
+//    Loading from a CSV file
+    func fetchProductsFromCSV() {
+        if let url = Bundle.main.url(forResource: "DummyProducts", withExtension: "csv") {
+            
+            //Method 1: Using URLSession
+//            Question -
+//            Why shouldn't I use URLSession? I want to maintain uniformity between local files
+//            and API calls.
+//            Why is it recommended to use reading from Data(contentsOf: ) ?
+//            Answer -
+//            URLSession is for I/O over a network stack
+//            Even if you give it a file:// URL, it still goes through extra layers meant for HTTP/HTTPS, FTP, etc.
+//
+//            This adds unnecessary overhead compared to just reading bytes from disk.
+//            let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
+//                if let data = data {
+//                    //what is utf8?
+//                    if let stringData = String(data: data, encoding: .utf8) {
+//                        //cleaning data
+//                        //as I was getting an extra space at the end of the file.
+//                        let cleanedStringData = stringData.trimmingCharacters(in: .whitespacesAndNewlines)
+//                        var rows: [String] = cleanedStringData.components(separatedBy: "\n")
+//                        print("rows = \(rows)")
+//                        if rows.count > 0 {
+//                            rows.remove(at: 0)
+//                            var products: [ProductModelForCSV] = []
+//                            for row in rows {
+//                                let fieldValues: [String] = row.components(separatedBy: ",")
+//                                //Ignoring corrupt data row
+//                                if fieldValues.count < 6 {
+//                                    continue
+//                                }
+//                                print("\nfieldVlaues = \(fieldValues)")
+//                                let product = ProductModelForCSV(productID: fieldValues[0],
+//                                                                 productName: fieldValues[1],
+//                                                                 category: fieldValues[2],
+//                                                                 price: fieldValues[3],
+//                                                                 stockQuantity: fieldValues[4],
+//                                                                 description: fieldValues[5])
+//                                products.append(product)
+//                            }
+//                            print("logging: fetched products from CSV)")
+//                            for product in products {
+//                                print(product)
+//                            }
+//                        }
+//                    } else {
+//                        print("error converting data to string")
+//                    }
+//                } else {
+//                    print("Error")
+//                }
+//            }
+//            dataTask.resume()
+            
+            
+            //Method 2 - Directly reading from file without URLSession
+            DispatchQueue.global().async {
+                do {
+                    let fileData = try Data(contentsOf: url)
+                    //cleanedString
+                    guard let stringData = String(data: fileData, encoding: .utf8) else {
+                        return
+                    }
+                    let rows: [String] = stringData.components(separatedBy: "\n")
+                    var products: [ProductModelForCSV] = []
+                    for row in rows {
+                        let fieldValues: [String] = row.components(separatedBy: ",")
+                        //ignoring corrupt row data
+                        if fieldValues.count < 6 {
+                            continue
+                        }
+                        let product = ProductModelForCSV(productID: fieldValues[0],
+                                                         productName: fieldValues[1],
+                                                         category: fieldValues[2],
+                                                         price: fieldValues[3],
+                                                         stockQuantity: fieldValues[4],
+                                                         description: fieldValues[5])
+                        products.append(product)
+                        print(product)
+                    }
+                    print(products)
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
 }
