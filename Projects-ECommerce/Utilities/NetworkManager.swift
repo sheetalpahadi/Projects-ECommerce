@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Alamofire
 
 final class NetworkManager {
     
@@ -103,6 +104,49 @@ final class NetworkManager {
             }
         }
         dataTask.resume()
+    }
+    
+//    4 - Network call using async/await
+    static func fetchProductsUsingAsyncAwait() async -> ([ProductModel], AppError?) {
+        let urlString = EndPoints.fetchProducts.rawValue
+        guard let url = URL(string: urlString) else {
+            return ([], .invalidUrl)
+        }
+        let request = URLRequest(url: url)
+        do {
+            let (data, error) = try await URLSession.shared.data(for: request)
+            do {
+                let decodedData = try JSONDecoder().decode([ProductModel].self, from: data)
+                return (decodedData, nil)
+            } catch {
+                return([], .invalidResponse)
+            }
+        } catch {
+            return ([], .unknownServerError)
+        }
+    }
+    
+//    5 - Network call using Alamofire
+    
+    static func fetchProductsUsingAlamofire(_ completionHandler: @escaping ([ProductModel], AppError?) -> ()) {
+        let urlString = EndPoints.fetchProducts.rawValue
+        guard let url = URL(string: urlString) else {
+            completionHandler([], .invalidUrl)
+            return
+        }
+        
+        let request = URLRequest(url: url)
+        AF.request(url, method: .get)
+            .validate(contentType: ["application/json"])
+            .responseDecodable(of: [ProductModel].self) { response in
+                switch response.result {
+                case .success(let data) :
+                    completionHandler(data, nil)
+                case .failure(let error):
+                    completionHandler([], .unknownServerError)
+                }
+            }
+        
     }
 }
 

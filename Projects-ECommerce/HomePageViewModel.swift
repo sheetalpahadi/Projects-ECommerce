@@ -13,15 +13,43 @@ class HomePageViewModel: ObservableObject {
     @Published var products: [ProductModel] = []
     
     init() {
-        fetchproductsWithoutNetworkLayer()
+//        fetchproductsWithoutNetworkLayer()
 //        fetchProductsWithCustomError()
 //        fetchProductsWithApiErrors()
 //        fetchproductsFromLocalFileSync()
 //        fetchproductsFromLocalFileAsync()
 //        fetchProductsFromCSV()
+//        Task {
+//            await fetchProductsUsingAsyncAwait()
+//        }
+          fetchProductsUsingAlamofire()
 //        TO DO :
-//        1. Use async/await pattern for asynchronous calls
 //        2. Use any 3rd party - Alamofire
+    }
+    
+    
+//    Approach 6 - Fetching products using Alamofire
+    func fetchProductsUsingAlamofire() {
+        NetworkManager.fetchProductsUsingAlamofire { products, error in
+            DispatchQueue.main.async { [weak self] in
+                self?.products = products
+            }
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    
+//    Approach 5 - Fetching Products through API using async/await
+    func fetchProductsUsingAsyncAwait() async {
+        let (products, error) = await NetworkManager.fetchProductsUsingAsyncAwait()
+        if let error = error {
+            print(error.localizedDescription)
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.products = products
+        }
     }
     
 //    Approach 4 - Fetching products through API with Custom Errors with handling of API errors
