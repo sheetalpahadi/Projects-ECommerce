@@ -31,7 +31,7 @@ struct HomePageView: View {
                 TextField(text: $viewModel.searchText) {
                     Text("Type to search products")
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 6)
                 .padding(.vertical, 4)
                 Image(systemName: "magnifyingglass")
                     .resizable()
@@ -42,6 +42,15 @@ struct HomePageView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(.black, lineWidth: 0.5)
             )
+            HStack {
+                Image(systemName: "bell")
+                    .frame(width: 20, height: 20)
+                    .badge(3)
+                Image(systemName: "heart")
+                    .frame(width: 20, height: 20)
+                Image(systemName: "person")
+                    .frame(width: 20, height: 20)
+            }
         }
       
         .padding(.all, 8)
