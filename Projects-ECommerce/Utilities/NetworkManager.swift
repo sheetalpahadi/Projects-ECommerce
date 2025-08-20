@@ -114,7 +114,13 @@ final class NetworkManager {
         }
         let request = URLRequest(url: url)
         do {
-            let (data, error) = try await URLSession.shared.data(for: request)
+            //VERY IMP - URLSession.shared.data returns (data, response) tuple. not (data, error)
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let response = response as? HTTPURLResponse, (200 ... 299).contains(response.statusCode) else {
+                return ([], .invalidResponse)
+            }
+            
             do {
                 let decodedData = try JSONDecoder().decode([ProductModel].self, from: data)
                 return (decodedData, nil)
@@ -147,6 +153,27 @@ final class NetworkManager {
                 }
             }
         
+    }
+    
+    
+//    6 - Network call using async await throw
+   static func fetchProductsUsingAsyncAwaitThrow() async throws -> [ProductModel] {
+        
+        let urlString = EndPoints.fetchProducts.rawValue
+        
+        guard let url = URL(string: urlString) else {
+            throw AppError.invalidUrl
+        }
+        
+        let request = URLRequest(url: url)
+        
+        let (data, response) =  try await URLSession.shared.data(for: request)
+        do {
+            let decodedData = try JSONDecoder().decode([ProductModel].self, from: data)
+            return decodedData
+        } catch {
+            throw AppError.parsingError
+        }
     }
 }
 

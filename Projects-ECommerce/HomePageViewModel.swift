@@ -22,11 +22,25 @@ class HomePageViewModel: ObservableObject {
 //        Task {
 //            await fetchProductsUsingAsyncAwait()
 //        }
-          fetchProductsUsingAlamofire()
-//        TO DO :
-//        2. Use any 3rd party - Alamofire
+//        fetchProductsUsingAlamofire()
+        fetchProductsUsingAsyncAwaitThrow()
     }
     
+    
+//    Appraoch 7 - Using async/await/throw
+//    VERY VERY IMP
+    func fetchProductsUsingAsyncAwaitThrow() {
+        Task {
+            do {
+                let fetchedProducts = try await NetworkManager.fetchProductsUsingAsyncAwaitThrow()
+                await MainActor.run {
+                    products = fetchedProducts
+                }
+            } catch let error as AppError {
+                print(error.localizedDescription)
+            }
+        }
+    }
     
 //    Approach 6 - Fetching products using Alamofire
     func fetchProductsUsingAlamofire() {

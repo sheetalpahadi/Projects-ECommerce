@@ -14,6 +14,7 @@ enum AppError: Error {
     case unknownServerError
     case invalidUrl
     case apiError(code: Int, errorMessage: String)
+    case parsingError
     //to handle error messages and status codes if api sends error in repsonse
 }
 
@@ -27,6 +28,7 @@ extension AppError: LocalizedError {
         case .invalidUrl: String(localized: "Invalid URL was called")
         case .apiError(let code, let errorMessage):
             String(localized: "\(errorMessage)")
+        case .parsingError: String(localized: "Parsing error")
         }
     }
     
@@ -39,6 +41,7 @@ extension AppError: LocalizedError {
         case .invalidUrl: String(localized: "Error Reason  - Invalid URL was called")
         case .apiError(let code, let errorMessage):
             String(localized: "Error Reason - \(errorMessage)")
+        case .parsingError: String(localized: "Parsing error")
         }
     }
     
@@ -51,6 +54,7 @@ extension AppError: LocalizedError {
         case .invalidUrl: String(localized: "Check your URL")
         case .apiError(let code, let errorMessage):
             String(localized: "Suggestion - \(errorMessage)")
+        case .parsingError: String(localized: "Parsing error")
         }
     }
 }
