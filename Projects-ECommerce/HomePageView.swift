@@ -45,7 +45,7 @@ struct HomePageView: View {
             HStack {
                 Image(systemName: "bell")
                     .frame(width: 20, height: 20)
-                    .badge(3)
+                    .badgeView(count: 3)
                 Image(systemName: "heart")
                     .frame(width: 20, height: 20)
                 Image(systemName: "person")
