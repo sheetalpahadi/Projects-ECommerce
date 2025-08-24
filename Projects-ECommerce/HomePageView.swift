@@ -73,7 +73,12 @@ struct HomePageView: View {
             
             LazyVGrid(columns: gridItems, spacing: 24) {
                 ForEach(viewModel.products, id: \.id) { product in
-                    ProductView(product: product)
+//                    1- Product View with no image caching
+//                    ProductView(product: product)
+//                        .frame(height: 250)
+                    
+//                    2 - Product View with image caching
+                    ProductViewWithImageCaching(product: product)
                         .frame(height: 250)
                 }
             }
